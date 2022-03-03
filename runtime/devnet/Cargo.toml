@@ -49,6 +49,7 @@ hex-literal = { version = "0.3.4", optional = true }
 
 # Local Dependencies
 common-primitives = { default-features = false, path = "../../primitives/common" }
+runtime-common = { default-features = false, path = "../common" }
 
 pallet-template = { default-features = false, path = "../../pallets/template" }
 
@@ -86,6 +87,7 @@ std = [
 	"sp-version/std",
 
 	"common-primitives/std",
+	"runtime-common/std",
 ]
 runtime-benchmarks = [
 	"frame-benchmarking/runtime-benchmarks",

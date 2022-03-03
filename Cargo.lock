@@ -1162,6 +1162,7 @@ dependencies = [
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
  "parity-scale-codec",
+ "runtime-common",
  "scale-info",
  "sp-api",
  "sp-block-builder",
@@ -4820,6 +4821,16 @@ checksum = "ffc936cf8a7ea60c58f030fd36a612a48f440610214dc54bc36431f9ea0c3efb"
 dependencies = [
  "libc",
  "winapi 0.3.9",
+]
+
+[[package]]
+name = "runtime-common"
+version = "4.0.0-dev"
+dependencies = [
+ "common-primitives",
+ "frame-support",
+ "frame-system",
+ "sp-runtime",
 ]
 
 [[package]]
