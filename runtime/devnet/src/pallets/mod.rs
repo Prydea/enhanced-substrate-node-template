@@ -36,3 +36,18 @@ pub use treasury::*;
 
 pub mod bounties;
 pub use bounties::*;
+
+pub mod session;
+pub use session::*;
+
+pub mod authority_discovery;
+pub use authority_discovery::*;
+
+pub mod election_provider_multi_phase;
+pub use election_provider_multi_phase::*;
+
+pub mod staking;
+pub use staking::*;
+
+pub mod bags_list;
+pub use bags_list::*;

@@ -108,10 +108,10 @@ impl frame_system::Config for Runtime {
 // 	type Signature = Signature;
 // }
 
-// impl<C> frame_system::offchain::SendTransactionTypes<C> for Runtime
-// where
-// 	Call: From<C>,
-// {
-// 	type Extrinsic = UncheckedExtrinsic;
-// 	type OverarchingCall = Call;
-// }
+impl<C> frame_system::offchain::SendTransactionTypes<C> for Runtime
+where
+	Call: From<C>,
+{
+	type Extrinsic = UncheckedExtrinsic;
+	type OverarchingCall = Call;
+}

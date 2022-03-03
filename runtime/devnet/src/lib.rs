@@ -8,13 +8,14 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 pub use common_primitives::*;
 
+pub use runtime_common::constants;
 use runtime_common::{
 	constants::{currency::*, time::*},
 	*,
 };
 
 mod pallets;
-use pallets::*;
+pub use pallets::*;
 
 use pallet_grandpa::{
 	fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
@@ -24,7 +25,7 @@ use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
 	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, NumberFor},
-	transaction_validity::{TransactionSource, TransactionValidity},
+	transaction_validity::{TransactionPriority, TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult,
 };
 use sp_std::prelude::*;
@@ -43,6 +44,7 @@ pub use frame_support::{
 	StorageValue,
 };
 pub use pallet_balances::Call as BalancesCall;
+pub use pallet_staking::StakerStatus;
 pub use pallet_timestamp::Call as TimestampCall;
 use pallet_transaction_payment::CurrencyAdapter;
 #[cfg(any(feature = "std", test))]
@@ -102,6 +104,9 @@ parameter_types! {
 }
 
 parameter_types! {
+	pub const ImOnlineUnsignedPriority: TransactionPriority = TransactionPriority::max_value();
+	/// We prioritize im-online heartbeats over election solution submission.
+	pub const StakingUnsignedPriority: TransactionPriority = TransactionPriority::max_value() / 2;
 	pub const MaxAuthorities: u32 = 100;
 }
 
@@ -131,6 +136,12 @@ construct_runtime!(
 		Treasury: pallet_treasury,
 		Bounties: pallet_bounties,
 		ChildBounties: pallet_child_bounties,
+		AuthorityDiscovery: pallet_authority_discovery,
+		ElectionProviderMultiPhase: pallet_election_provider_multi_phase,
+		Staking: pallet_staking,
+		Session: pallet_session,
+		BagsList: pallet_bags_list,
+
 		// Include the custom logic from the pallet-template in the runtime.
 		TemplateModule: pallet_template,
 	}
