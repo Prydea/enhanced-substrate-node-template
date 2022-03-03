@@ -25,7 +25,7 @@ pub use sp_runtime::OpaqueExtrinsic;
 use sp_runtime::{
 	generic,
 	traits::{BlakeTwo256, IdentifyAccount, Verify},
-	 MultiSignature,
+	MultiSignature,
 };
 
 /// An index to a block.
