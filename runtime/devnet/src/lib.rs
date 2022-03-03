@@ -102,8 +102,6 @@ parameter_types! {
 	pub const SS58Prefix: u8 = 42;
 }
 
-impl pallet_randomness_collective_flip::Config for Runtime {}
-
 impl pallet_aura::Config for Runtime {
 	type AuthorityId = AuraId;
 	type DisabledValidators = ();
