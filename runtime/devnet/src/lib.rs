@@ -127,6 +127,7 @@ construct_runtime!(
 		Sudo: pallet_sudo,
 		Scheduler: pallet_scheduler,
 		Preimage: pallet_preimage,
+		Council: pallet_collective::<Instance1>,
 		// Include the custom logic from the pallet-template in the runtime.
 		TemplateModule: pallet_template,
 	}

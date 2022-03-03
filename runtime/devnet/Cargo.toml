@@ -28,6 +28,7 @@ pallet-transaction-payment = { version = "4.0.0-dev", default-features = false, 
 frame-executive = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17" }
 pallet-scheduler = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17" }
 pallet-preimage = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17" }
+pallet-collective = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17" }
 
 sp-api = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17" }
 sp-block-builder = {  version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17"}
@@ -79,6 +80,7 @@ std = [
 	"pallet-transaction-payment/std",
 	"pallet-scheduler/std",
 	"pallet-preimage/std",
+	"pallet-collective/std",
 
 	"sp-api/std",
 	"sp-block-builder/std",
