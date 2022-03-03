@@ -1,0 +1,27 @@
+[package]
+authors     = ["Bholdus Network"]
+description = "Bholdus Node Template runtime common primitives"
+edition     = "2021"
+homepage    = "https://bholdus.com"
+license     = "GPL-3.0"
+name        = "common-primitives"
+repository  = "https://github.com/bholdus/bholdus-node-template"
+version     = "0.0.1"
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "2.0.0", default-features = false, features = [
+	"derive",
+	"max-encoded-len",
+]  }
+scale-info = { version = "1.0", default-features = false, features = ["derive"] }
+sp-core = { version = "5.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17" }
+sp-runtime = { version = "5.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17" }
+
+[features]
+default = ["std"]
+std = [
+	"codec/std",
+    "scale-info/std",
+	"sp-core/std",
+	"sp-runtime/std",
+]
