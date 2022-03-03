@@ -105,18 +105,6 @@ parameter_types! {
 	pub const MaxAuthorities: u32 = 100;
 }
 
-parameter_types! {
-	pub const TransactionByteFee: Balance = 1;
-}
-
-impl pallet_transaction_payment::Config for Runtime {
-	type OnChargeTransaction = CurrencyAdapter<Balances, ()>;
-	type TransactionByteFee = TransactionByteFee;
-	type OperationalFeeMultiplier = ConstU8<5>;
-	type WeightToFee = IdentityFee<Balance>;
-	type FeeMultiplierUpdate = ();
-}
-
 impl pallet_sudo::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
