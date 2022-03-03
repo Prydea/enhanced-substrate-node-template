@@ -21,3 +21,9 @@ pub use transaction_payment::*;
 
 pub mod sudo;
 pub use sudo::*;
+
+pub mod scheduler;
+pub use scheduler::*;
+
+pub mod preimage;
+pub use preimage::*;
