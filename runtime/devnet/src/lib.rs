@@ -128,6 +128,9 @@ construct_runtime!(
 		Scheduler: pallet_scheduler,
 		Preimage: pallet_preimage,
 		Council: pallet_collective::<Instance1>,
+		Treasury: pallet_treasury,
+		Bounties: pallet_bounties,
+		ChildBounties: pallet_child_bounties,
 		// Include the custom logic from the pallet-template in the runtime.
 		TemplateModule: pallet_template,
 	}
