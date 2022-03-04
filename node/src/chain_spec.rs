@@ -184,6 +184,7 @@ fn testnet_genesis(
 		aura: AuraConfig { authorities: vec![] },
 		grandpa: GrandpaConfig { authorities: vec![] },
 		authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
+		im_online: ImOnlineConfig { keys: vec![] },
 		sudo: SudoConfig {
 			// Assign network admin rights.
 			key: Some(root_key),
@@ -205,6 +206,5 @@ fn testnet_genesis(
 				.map(|x| (x.0.clone(), x.0.clone(), session_keys(x.2.clone(), x.3.clone())))
 				.collect::<Vec<_>>(),
 		},
-		im_online: ImOnlineConfig { keys: vec![] },
 	}
 }
