@@ -1,7 +1,8 @@
 use devnet_runtime::{
 	constants::currency::*, opaque::SessionKeys, AccountId, AuraConfig, AuthorityDiscoveryConfig,
-	Balance, BalancesConfig, CouncilConfig, GenesisConfig, GrandpaConfig, MaxNominations,
-	SessionConfig, Signature, StakerStatus, StakingConfig, SudoConfig, SystemConfig, WASM_BINARY,
+	Balance, BalancesConfig, CouncilConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig,
+	IndicesConfig, MaxNominations, SessionConfig, Signature, StakerStatus, StakingConfig,
+	SudoConfig, SystemConfig, WASM_BINARY,
 };
 use sc_service::ChainType;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -179,6 +180,7 @@ fn testnet_genesis(
 			// Configure endowed accounts with initial balance of 1 << 60.
 			balances: endowed_accounts.iter().cloned().map(|k| (k, 1 << 60)).collect(),
 		},
+		indices: IndicesConfig { indices: vec![] },
 		aura: AuraConfig { authorities: vec![] },
 		grandpa: GrandpaConfig { authorities: vec![] },
 		authority_discovery: AuthorityDiscoveryConfig { keys: vec![] },
@@ -203,5 +205,6 @@ fn testnet_genesis(
 				.map(|x| (x.0.clone(), x.0.clone(), session_keys(x.2.clone(), x.3.clone())))
 				.collect::<Vec<_>>(),
 		},
+		im_online: ImOnlineConfig { keys: vec![] },
 	}
 }

@@ -20,6 +20,7 @@ pub use pallets::*;
 use pallet_grandpa::{
 	fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
 };
+use pallet_session::historical as pallet_session_historical;
 use sp_api::impl_runtime_apis;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
@@ -110,6 +111,14 @@ parameter_types! {
 	pub const MaxAuthorities: u32 = 100;
 }
 
+parameter_types! {
+		// NOTE: Currently it is not possible to change the epoch duration after the chain has started.
+	//       Attempting to do so will brick block production.
+	pub const EpochDuration: u64 = EPOCH_DURATION_IN_SLOTS;
+	pub const ReportLongevity: u64 =
+		BondingDuration::get() as u64 * SessionsPerEra::get() as u64 * EpochDuration::get();
+}
+
 /// Configure the pallet-template in pallets/template.
 impl pallet_template::Config for Runtime {
 	type Event = Event;
@@ -123,32 +132,59 @@ construct_runtime!(
 		UncheckedExtrinsic = UncheckedExtrinsic
 	{
 		System: frame_system,
-		RandomnessCollectiveFlip: pallet_randomness_collective_flip,
-		Timestamp: pallet_timestamp,
 		Aura: pallet_aura,
-		Grandpa: pallet_grandpa,
+		Timestamp: pallet_timestamp,
+		// Authorship must be before session in order to note author in the correct session and era
+		// for im-online and staking.
+		Authorship: pallet_authorship,
+		Indices: pallet_indices,
 		Balances: pallet_balances,
 		TransactionPayment: pallet_transaction_payment,
-		Sudo: pallet_sudo,
-		Scheduler: pallet_scheduler,
-		Preimage: pallet_preimage,
-		Council: pallet_collective::<Instance1>,
-		Treasury: pallet_treasury,
-		Bounties: pallet_bounties,
-		ChildBounties: pallet_child_bounties,
-		AuthorityDiscovery: pallet_authority_discovery,
+		// AssetTxPayment: pallet_asset_tx_payment,
 		ElectionProviderMultiPhase: pallet_election_provider_multi_phase,
 		Staking: pallet_staking,
 		Session: pallet_session,
+		// Democracy: pallet_democracy,
+		Council: pallet_collective::<Instance1>,
+		// TechnicalCommittee: pallet_collective::<Instance2>,
+		// Elections: pallet_elections_phragmen,
+		// TechnicalMembership: pallet_membership::<Instance1>,
+		Grandpa: pallet_grandpa,
+		Treasury: pallet_treasury,
+		// Contracts: pallet_contracts,
+		Sudo: pallet_sudo,
+		ImOnline: pallet_im_online,
+		AuthorityDiscovery: pallet_authority_discovery,
+		Offences: pallet_offences,
+		Historical: pallet_session_historical::{Pallet},
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip,
+		// Identity: pallet_identity,
+		// Society: pallet_society,
+		// Recovery: pallet_recovery,
+		// Vesting: pallet_vesting,
+		Scheduler: pallet_scheduler,
+		Preimage: pallet_preimage,
+		// Proxy: pallet_proxy,
+		// Multisig: pallet_multisig,
+		Bounties: pallet_bounties,
+		// Tips: pallet_tips,
+		// Assets: pallet_assets,
+		// Mmr: pallet_mmr,
+		// Lottery: pallet_lottery,
+		// Gilt: pallet_gilt,
+		// Uniques: pallet_uniques,
+		// TransactionStorage: pallet_transaction_storage,
 		BagsList: pallet_bags_list,
-
+		ChildBounties: pallet_child_bounties,
+		// Referenda: pallet_referenda,
+		// ConvictionVoting: pallet_conviction_voting,
 		// Include the custom logic from the pallet-template in the runtime.
 		TemplateModule: pallet_template,
 	}
 );
 
 /// The address format for describing accounts.
-pub type Address = sp_runtime::MultiAddress<AccountId, ()>;
+pub type Address = sp_runtime::MultiAddress<AccountId, AccountIndex>;
 /// Block header type as expected by this runtime.
 pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 /// Block type as expected by this runtime.
@@ -173,6 +209,7 @@ pub type Executive = frame_executive::Executive<
 	frame_system::ChainContext<Runtime>,
 	Runtime,
 	AllPalletsWithSystem,
+	pallet_bags_list::migrations::CheckCounterPrefix<Runtime>,
 >;
 
 #[cfg(feature = "runtime-benchmarks")]

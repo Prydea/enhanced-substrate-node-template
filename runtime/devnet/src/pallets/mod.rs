@@ -13,6 +13,9 @@ pub use grandpa::*;
 pub mod timestamp;
 pub use timestamp::*;
 
+pub mod indices;
+pub use indices::*;
+
 pub mod balances;
 pub use balances::*;
 
@@ -51,3 +54,12 @@ pub use staking::*;
 
 pub mod bags_list;
 pub use bags_list::*;
+
+pub mod im_online;
+pub use im_online::*;
+
+pub mod offences;
+pub use offences::*;
+
+pub mod authorship;
+pub use authorship::*;
