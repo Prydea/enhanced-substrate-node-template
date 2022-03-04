@@ -7,7 +7,7 @@
 
 use std::sync::Arc;
 
-use devnet_runtime::{opaque::Block, AccountId, Balance, Nonce};
+use devnet_runtime::{AccountId, Balance, Nonce, OpaqueBlock as Block};
 pub use sc_rpc_api::DenyUnsafe;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;

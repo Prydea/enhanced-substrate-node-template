@@ -3,9 +3,9 @@
 use frame_support::traits::KeyOwnerProofSystem;
 use sp_core::crypto::KeyTypeId;
 
-use crate::*;
-
 pub use pallet_grandpa::AuthorityId as GrandpaId;
+
+use crate::*;
 
 impl pallet_grandpa::Config for Runtime {
 	type Event = Event;

@@ -1,13 +1,11 @@
 use devnet_runtime::{
-	constants::currency::*, opaque::SessionKeys, AccountId, AuraConfig, AuthorityDiscoveryConfig,
-	Balance, BalancesConfig, CouncilConfig, GenesisConfig, GrandpaConfig, ImOnlineConfig,
-	IndicesConfig, MaxNominations, SessionConfig, Signature, StakerStatus, StakingConfig,
-	SudoConfig, SystemConfig, WASM_BINARY,
+	constants::currency::*, AccountId, AuraConfig, AuraId, AuthorityDiscoveryConfig,
+	AuthorityDiscoveryId, Balance, BalancesConfig, CouncilConfig, GenesisConfig, GrandpaConfig,
+	GrandpaId, ImOnlineConfig, ImOnlineId, IndicesConfig, MaxNominations, SessionConfig,
+	SessionKeys, Signature, StakerStatus, StakingConfig, SudoConfig, SystemConfig, WASM_BINARY,
 };
 use sc_service::ChainType;
-use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::{sr25519, Pair, Public};
-use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_runtime::{
 	traits::{IdentifyAccount, Verify},
 	Perbill,
@@ -37,17 +35,26 @@ where
 }
 
 /// Helper function to generate stash, controller and session key from seed
-pub fn authority_keys_from_seed(s: &str) -> (AccountId, AccountId, GrandpaId, AuraId) {
+pub fn authority_keys_from_seed(
+	s: &str,
+) -> (AccountId, AccountId, GrandpaId, AuraId, ImOnlineId, AuthorityDiscoveryId) {
 	(
 		get_account_id_from_seed::<sr25519::Public>(&format!("{}//stash", s)),
 		get_account_id_from_seed::<sr25519::Public>(s),
 		get_from_seed::<GrandpaId>(s),
 		get_from_seed::<AuraId>(s),
+		get_from_seed::<ImOnlineId>(s),
+		get_from_seed::<AuthorityDiscoveryId>(s),
 	)
 }
 
-fn session_keys(grandpa: GrandpaId, aura: AuraId) -> SessionKeys {
-	SessionKeys { grandpa, aura }
+fn session_keys(
+	grandpa: GrandpaId,
+	aura: AuraId,
+	im_online: ImOnlineId,
+	authority_discovery: AuthorityDiscoveryId,
+) -> SessionKeys {
+	SessionKeys { grandpa, aura, im_online, authority_discovery }
 }
 
 pub fn development_config() -> Result<ChainSpec, String> {
@@ -143,7 +150,14 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 /// Configure initial storage state for FRAME modules.
 fn testnet_genesis(
 	wasm_binary: &[u8],
-	initial_authorities: Vec<(AccountId, AccountId, GrandpaId, AuraId)>,
+	initial_authorities: Vec<(
+		AccountId,
+		AccountId,
+		GrandpaId,
+		AuraId,
+		ImOnlineId,
+		AuthorityDiscoveryId,
+	)>,
 	initial_nominators: Vec<AccountId>,
 	root_key: AccountId,
 	endowed_accounts: Vec<AccountId>,
@@ -203,7 +217,13 @@ fn testnet_genesis(
 		session: SessionConfig {
 			keys: initial_authorities
 				.iter()
-				.map(|x| (x.0.clone(), x.0.clone(), session_keys(x.2.clone(), x.3.clone())))
+				.map(|x| {
+					(
+						x.0.clone(),
+						x.0.clone(),
+						session_keys(x.2.clone(), x.3.clone(), x.4.clone(), x.5.clone()),
+					)
+				})
 				.collect::<Vec<_>>(),
 		},
 	}
