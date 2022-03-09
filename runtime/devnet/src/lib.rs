@@ -299,7 +299,7 @@ impl_runtime_apis! {
 			>,
 			key_owner_proof: fg_primitives::OpaqueKeyOwnershipProof,
 		) -> Option<()> {
-						let key_owner_proof = key_owner_proof.decode()?;
+			let key_owner_proof = key_owner_proof.decode()?;
 
 			Grandpa::submit_unsigned_equivocation_report(
 				equivocation_proof,
@@ -316,6 +316,12 @@ impl_runtime_apis! {
 			Historical::prove((fg_primitives::KEY_TYPE, authority_id))
 				.map(|p| p.encode())
 				.map(fg_primitives::OpaqueKeyOwnershipProof::new)
+		}
+	}
+
+	impl sp_authority_discovery::AuthorityDiscoveryApi<Block> for Runtime {
+		fn authorities() -> Vec<AuthorityDiscoveryId> {
+			AuthorityDiscovery::authorities()
 		}
 	}
 

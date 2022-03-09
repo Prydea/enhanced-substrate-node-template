@@ -1,52 +1,20 @@
+use crate::chain_spec::{authority_keys_from_seed, get_account_id_from_seed};
 use devnet_runtime::{
 	constants::currency::*, AccountId, AuraConfig, AuraId, AuthorityDiscoveryConfig,
 	AuthorityDiscoveryId, Balance, BalancesConfig, CouncilConfig, GenesisConfig, GrandpaConfig,
 	GrandpaId, ImOnlineConfig, ImOnlineId, IndicesConfig, MaxNominations, SessionConfig,
-	SessionKeys, Signature, StakerStatus, StakingConfig, SudoConfig, SystemConfig, WASM_BINARY,
+	SessionKeys, StakerStatus, StakingConfig, SudoConfig, SystemConfig, WASM_BINARY,
 };
-use sc_service::ChainType;
-use sp_core::{sr25519, Pair, Public};
-use sp_runtime::{
-	traits::{IdentifyAccount, Verify},
-	Perbill,
-};
+use sc_service::{config::TelemetryEndpoints, ChainType, Properties};
+use sp_core::sr25519;
+use sp_runtime::Perbill;
 
 // The URL for the telemetry server.
-// const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
+const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
+const DEFAULT_PROTOCOL_ID: &str = "devnet";
 
 /// Specialized `ChainSpec`. This is a specialization of the general Substrate ChainSpec type.
 pub type ChainSpec = sc_service::GenericChainSpec<GenesisConfig>;
-
-/// Generate a crypto pair from seed.
-pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
-	TPublic::Pair::from_string(&format!("//{}", seed), None)
-		.expect("static values are valid; qed")
-		.public()
-}
-
-type AccountPublic = <Signature as Verify>::Signer;
-
-/// Generate an account ID from seed.
-pub fn get_account_id_from_seed<TPublic: Public>(seed: &str) -> AccountId
-where
-	AccountPublic: From<<TPublic::Pair as Pair>::Public>,
-{
-	AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
-}
-
-/// Helper function to generate stash, controller and session key from seed
-pub fn authority_keys_from_seed(
-	s: &str,
-) -> (AccountId, AccountId, GrandpaId, AuraId, ImOnlineId, AuthorityDiscoveryId) {
-	(
-		get_account_id_from_seed::<sr25519::Public>(&format!("{}//stash", s)),
-		get_account_id_from_seed::<sr25519::Public>(s),
-		get_from_seed::<GrandpaId>(s),
-		get_from_seed::<AuraId>(s),
-		get_from_seed::<ImOnlineId>(s),
-		get_from_seed::<AuthorityDiscoveryId>(s),
-	)
-}
 
 fn session_keys(
 	grandpa: GrandpaId,
@@ -57,14 +25,24 @@ fn session_keys(
 	SessionKeys { grandpa, aura, im_online, authority_discovery }
 }
 
+pub fn get_properties() -> Properties {
+	let mut properties = Properties::new();
+
+	properties.insert("ss58Format".into(), devnet_runtime::SS58Prefix::get().into());
+	properties.insert("tokenDecimals".into(), "DEV".into());
+	properties.insert("tokenSymbol".into(), 18.into());
+
+	properties
+}
+
 pub fn development_config() -> Result<ChainSpec, String> {
 	let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
 
 	Ok(ChainSpec::from_genesis(
 		// Name
-		"Development",
+		"Devnet Development",
 		// ID
-		"dev",
+		"devnet-dev",
 		ChainType::Development,
 		move || {
 			testnet_genesis(
@@ -87,12 +65,13 @@ pub fn development_config() -> Result<ChainSpec, String> {
 		// Bootnodes
 		vec![],
 		// Telemetry
-		None,
+		Some(TelemetryEndpoints::new(vec![(String::from(STAGING_TELEMETRY_URL), 0)]).unwrap()),
 		// Protocol ID
-		None,
+		Some(DEFAULT_PROTOCOL_ID),
+		// Fork ID
 		None,
 		// Properties
-		None,
+		Some(get_properties()),
 		// Extensions
 		None,
 	))
@@ -103,9 +82,9 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 
 	Ok(ChainSpec::from_genesis(
 		// Name
-		"Local Testnet",
+		"Devnet Local",
 		// ID
-		"local_testnet",
+		"devnet-local",
 		ChainType::Local,
 		move || {
 			testnet_genesis(
@@ -136,12 +115,63 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
 		// Bootnodes
 		vec![],
 		// Telemetry
-		None,
+		Some(TelemetryEndpoints::new(vec![(String::from(STAGING_TELEMETRY_URL), 0)]).unwrap()),
 		// Protocol ID
+		Some(DEFAULT_PROTOCOL_ID),
+		// Fork ID
 		None,
 		// Properties
+		Some(get_properties()),
+		// Extensions
 		None,
+	))
+}
+
+pub fn production_sample_config() -> Result<ChainSpec, String> {
+	let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
+
+	Ok(ChainSpec::from_genesis(
+		// Name
+		"Devnet Production",
+		// ID
+		"devnet-prod",
+		ChainType::Live,
+		move || {
+			testnet_genesis(
+				wasm_binary,
+				// Initial PoA authorities
+				vec![authority_keys_from_seed("Alice"), authority_keys_from_seed("Bob")],
+				vec![],
+				// Sudo account
+				get_account_id_from_seed::<sr25519::Public>("Alice"),
+				// Pre-funded accounts
+				vec![
+					get_account_id_from_seed::<sr25519::Public>("Alice"),
+					get_account_id_from_seed::<sr25519::Public>("Bob"),
+					get_account_id_from_seed::<sr25519::Public>("Charlie"),
+					get_account_id_from_seed::<sr25519::Public>("Dave"),
+					get_account_id_from_seed::<sr25519::Public>("Eve"),
+					get_account_id_from_seed::<sr25519::Public>("Ferdie"),
+					get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
+					get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
+					get_account_id_from_seed::<sr25519::Public>("Charlie//stash"),
+					get_account_id_from_seed::<sr25519::Public>("Dave//stash"),
+					get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
+					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
+				],
+				true,
+			)
+		},
+		// Bootnodes
+		vec![],
+		// Telemetry
+		Some(TelemetryEndpoints::new(vec![(String::from(STAGING_TELEMETRY_URL), 0)]).unwrap()),
+		// Protocol ID
+		Some(DEFAULT_PROTOCOL_ID),
+		// Fork ID
 		None,
+		// Properties
+		Some(get_properties()),
 		// Extensions
 		None,
 	))
