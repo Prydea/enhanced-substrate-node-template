@@ -1,5 +1,5 @@
 use common_primitives::{
-	AccountId, Balance, BlockNumber, Hash, Header, Nonce, OpaqueBlock as Block,
+	AccountId, Balance, BlockNumber, Hash, Hashing, Header, Nonce, OpaqueBlock as Block,
 };
 use sc_client_api::{Backend as BackendT, BlockchainEvents, KeyIterator};
 use sp_api::{CallApiAt, NumberFor, ProvideRuntimeApi};
@@ -8,7 +8,7 @@ use sp_consensus::BlockStatus;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_runtime::{
 	generic::{BlockId, SignedBlock},
-	traits::{BlakeTwo256, Block as BlockT},
+	traits::Block as BlockT,
 	Justifications,
 };
 use sp_storage::{ChildInfo, StorageData, StorageKey};
@@ -68,7 +68,7 @@ pub trait AbstractClient<Block, Backend>:
 where
 	Block: BlockT,
 	Backend: BackendT<Block>,
-	Backend::State: sp_api::StateBackend<BlakeTwo256>,
+	Backend::State: sp_api::StateBackend<Hashing>,
 	Self::Api: RuntimeApiCollection<StateBackend = Backend::State>,
 {
 }
@@ -77,7 +77,7 @@ impl<Block, Backend, Client> AbstractClient<Block, Backend> for Client
 where
 	Block: BlockT,
 	Backend: BackendT<Block>,
-	Backend::State: sp_api::StateBackend<BlakeTwo256>,
+	Backend::State: sp_api::StateBackend<Hashing>,
 	Client: BlockchainEvents<Block>
 		+ ProvideRuntimeApi<Block>
 		+ HeaderBackend<Block>
@@ -109,9 +109,9 @@ pub trait ExecuteWithClient {
 	/// Execute whatever should be executed with the given client instance.
 	fn execute_with_client<Client, Api, Backend>(self, client: Arc<Client>) -> Self::Output
 	where
-		<Api as sp_api::ApiExt<Block>>::StateBackend: sp_api::StateBackend<BlakeTwo256>,
+		<Api as sp_api::ApiExt<Block>>::StateBackend: sp_api::StateBackend<Hashing>,
 		Backend: sc_client_api::Backend<Block>,
-		Backend::State: sp_api::StateBackend<BlakeTwo256>,
+		Backend::State: sp_api::StateBackend<Hashing>,
 		Api: crate::RuntimeApiCollection<StateBackend = Backend::State>,
 		Client: AbstractClient<Block, Backend, Api = Api> + 'static;
 }
