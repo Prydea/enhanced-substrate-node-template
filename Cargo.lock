@@ -1166,7 +1166,7 @@ dependencies = [
 
 [[package]]
 name = "devnet-runtime"
-version = "4.0.0-dev"
+version = "0.0.1"
 dependencies = [
  "common-primitives",
  "frame-benchmarking",
@@ -3846,7 +3846,7 @@ dependencies = [
 
 [[package]]
 name = "node-template"
-version = "4.0.0-dev"
+version = "0.0.1"
 dependencies = [
  "cli",
  "service",
@@ -4381,7 +4381,7 @@ dependencies = [
 
 [[package]]
 name = "pallet-template"
-version = "4.0.0-dev"
+version = "0.0.1"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -5304,7 +5304,7 @@ dependencies = [
 
 [[package]]
 name = "runtime-common"
-version = "4.0.0-dev"
+version = "0.0.1"
 dependencies = [
  "common-primitives",
  "frame-support",

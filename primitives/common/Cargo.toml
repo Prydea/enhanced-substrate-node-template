@@ -1,11 +1,9 @@
 [package]
-authors     = ["Bholdus Network"]
-description = "Bholdus Node Template runtime common primitives"
+authors     = ["Daniel Lam"]
+description = "Substrate Node Template runtime common primitives"
 edition     = "2021"
-homepage    = "https://bholdus.com"
-license     = "GPL-3.0"
+license     = "Unlicense"
 name        = "common-primitives"
-repository  = "https://github.com/bholdus/bholdus-node-template"
 version     = "0.0.1"
 
 [dependencies]
