@@ -8,6 +8,8 @@ use sp_runtime::traits::{IdentifyAccount, Verify};
 
 #[cfg(feature = "with-devnet-runtime")]
 pub mod devnet;
+#[cfg(feature = "with-mainnet-runtime")]
+pub mod mainnet;
 
 pub type DummyChainSpec = sc_service::GenericChainSpec<()>;
 

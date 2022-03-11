@@ -23,3 +23,4 @@ default = []
 runtime-benchmarks = ["cli/runtime-benchmarks","service/runtime-benchmarks"]
 
 with-devnet-runtime = ["cli/with-devnet-runtime","service/with-devnet-runtime"]
+with-mainnet-runtime = ["cli/with-mainnet-runtime","service/with-mainnet-runtime"]

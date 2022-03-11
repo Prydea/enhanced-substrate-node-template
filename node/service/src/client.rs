@@ -133,6 +133,8 @@ pub trait ClientHandle {
 pub enum Client {
 	#[cfg(feature = "with-devnet-runtime")]
 	Devnet(Arc<crate::FullClient<devnet_runtime::RuntimeApi, crate::DevnetExecutor>>),
+	#[cfg(feature = "with-mainnet-runtime")]
+	Mainnet(Arc<crate::FullClient<mainnet_runtime::RuntimeApi, crate::MainnetExecutor>>),
 }
 
 #[cfg(feature = "with-devnet-runtime")]
@@ -144,11 +146,22 @@ impl From<Arc<crate::FullClient<devnet_runtime::RuntimeApi, crate::DevnetExecuto
 	}
 }
 
+#[cfg(feature = "with-mainnet-runtime")]
+impl From<Arc<crate::FullClient<mainnet_runtime::RuntimeApi, crate::MainnetExecutor>>> for Client {
+	fn from(
+		client: Arc<crate::FullClient<mainnet_runtime::RuntimeApi, crate::MainnetExecutor>>,
+	) -> Self {
+		Self::Mainnet(client)
+	}
+}
+
 impl ClientHandle for Client {
 	fn execute_with<T: ExecuteWithClient>(&self, t: T) -> T::Output {
 		match self {
 			#[cfg(feature = "with-devnet-runtime")]
 			Self::Devnet(client) => T::execute_with_client::<_, _, crate::FullBackend>(t, client.clone()),
+			#[cfg(feature = "with-mainnet-runtime")]
+			Self::Mainnet(client) => T::execute_with_client::<_, _, crate::FullBackend>(t, client.clone()),
 		}
 	}
 }
@@ -158,6 +171,8 @@ macro_rules! match_client {
 		match $self {
 			#[cfg(feature = "with-devnet-runtime")]
 			Self::Devnet(client) => client.$method($($param),*),
+			#[cfg(feature = "with-mainnet-runtime")]
+			Self::Mainnet(client) => client.$method($($param),*),
 		}
 	};
 }

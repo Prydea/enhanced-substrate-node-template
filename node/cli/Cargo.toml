@@ -15,7 +15,7 @@ sc-service = { git = "https://github.com/paritytech/substrate.git", branch = "po
 try-runtime-cli = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17", optional = true }
 node-inspect = {  git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17"}
 
-service = {path="../service"}
+service = { path="../service" }
 
 [build-dependencies]
 substrate-build-script-utils = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.17" }
@@ -23,6 +23,7 @@ substrate-build-script-utils = { git = "https://github.com/paritytech/substrate.
 [features]
 default = []
 runtime-benchmarks = ["service/runtime-benchmarks"]
-try-runtime = ["try-runtime-cli","service/try-runtime"]
+try-runtime = ["try-runtime-cli", "service/try-runtime"]
 
 with-devnet-runtime = ["service/with-devnet-runtime"]
+with-mainnet-runtime = ["service/with-mainnet-runtime"]

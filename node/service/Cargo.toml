@@ -52,10 +52,12 @@ frame-benchmarking = { git = "https://github.com/paritytech/substrate.git", bran
 # Local Dependencies
 common-primitives = { path = "../../primitives/common" }
 devnet-runtime = { path = "../../runtime/devnet", optional = true }
+mainnet-runtime = { path = "../../runtime/mainnet", optional = true }
 
 [features]
 default = []
-runtime-benchmarks = ["frame-benchmarking", "devnet-runtime/runtime-benchmarks"]
-try-runtime = ["devnet-runtime/try-runtime"]
+runtime-benchmarks = ["frame-benchmarking", "devnet-runtime/runtime-benchmarks", "mainnet-runtime/runtime-benchmarks"]
+try-runtime = ["devnet-runtime/try-runtime", "mainnet-runtime/try-runtime"]
 
 with-devnet-runtime = ["devnet-runtime"]
+with-mainnet-runtime = ["mainnet-runtime"]

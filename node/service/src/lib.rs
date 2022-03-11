@@ -23,6 +23,8 @@ use std::{sync::Arc, time::Duration};
 
 #[cfg(feature = "with-devnet-runtime")]
 pub use devnet_runtime;
+#[cfg(feature = "with-mainnet-runtime")]
+pub use mainnet_runtime;
 
 pub mod chain_spec;
 mod client;
@@ -54,20 +56,46 @@ impl NativeExecutionDispatch for DevnetExecutor {
 	}
 }
 
+#[cfg(feature = "with-mainnet-runtime")]
+pub struct MainnetExecutor;
+#[cfg(feature = "with-mainnet-runtime")]
+impl NativeExecutionDispatch for MainnetExecutor {
+	/// Only enable the benchmarking host functions when we actually want to benchmark.
+	#[cfg(feature = "runtime-benchmarks")]
+	type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
+	/// Otherwise we only use the default Substrate host functions.
+	#[cfg(not(feature = "runtime-benchmarks"))]
+	type ExtendHostFunctions = ();
+
+	fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
+		mainnet_runtime::api::dispatch(method, data)
+	}
+
+	fn native_version() -> sc_executor::NativeVersion {
+		mainnet_runtime::native_version()
+	}
+}
+
 /// Can be called for a `Configuration` to check if it is a configuration for
-/// the `Moonbeam` network.
+/// the `some` network.
 pub trait IdentifyVariant {
-	/// Returns `true` if this is a configuration for the `Moonbase` network.
+	/// Returns `true` if this is a configuration for the `Devnet` network.
 	fn is_devnet(&self) -> bool;
+	/// Returns `true` if this is a configuration for the `Mainnet` network.
+	fn is_mainnet(&self) -> bool;
 }
 
 impl IdentifyVariant for Box<dyn ChainSpec> {
 	fn is_devnet(&self) -> bool {
 		self.id().starts_with("devnet")
 	}
+	fn is_mainnet(&self) -> bool {
+		self.id().starts_with("mainnet")
+	}
 }
 
 pub const DEVNET_RUNTIME_NOT_AVAILABLE: &str = "Devnet runtime is not available. Please compile the node with `--features with-devnet-runtime` to enable it.";
+pub const MAINNET_RUNTIME_NOT_AVAILABLE: &str = "Mainnet runtime is not available. Please compile the node with `--features with-mainnet-runtime` to enable it.";
 
 /// Builds a new object suitable for chain operations.
 #[allow(clippy::type_complexity)]
@@ -83,9 +111,12 @@ pub fn new_chain_ops(
 	ServiceError,
 > {
 	match &config.chain_spec {
+		#[cfg(feature = "with-mainnet-runtime")]
+		spec if spec.is_mainnet() =>
+			new_chain_ops_inner::<mainnet_runtime::RuntimeApi, MainnetExecutor>(config),
 		#[cfg(feature = "with-devnet-runtime")]
-		spec if spec.is_devnet() =>
-			new_chain_ops_inner::<devnet_runtime::RuntimeApi, DevnetExecutor>(config),
+		_ => new_chain_ops_inner::<devnet_runtime::RuntimeApi, DevnetExecutor>(config),
+		#[cfg(not(feature = "with-devnet-runtime"))]
 		_ => panic!("invalid chain spec"),
 	}
 }

@@ -36,19 +36,26 @@ impl SubstrateCli for Cli {
 			#[cfg(feature = "with-devnet-runtime")]
 			"devnet-prod-sample" => Box::new(chain_spec::devnet::production_sample_config()?),
 
+			#[cfg(feature = "with-mainnet-runtime")]
+			"mainnet-dev" => Box::new(chain_spec::mainnet::development_config()?),
+			#[cfg(feature = "with-mainnet-runtime")]
+			"mainnet-local" => Box::new(chain_spec::mainnet::local_testnet_config()?),
+			#[cfg(feature = "with-mainnet-runtime")]
+			"mainnet-prod-sample" => Box::new(chain_spec::mainnet::production_sample_config()?),
+
 			path => {
 				let path = std::path::PathBuf::from(path);
 				let chain_spec =
 					Box::new(service::chain_spec::DummyChainSpec::from_json_file(path.clone())?)
 						as Box<dyn sc_service::ChainSpec>;
 
-				if chain_spec.is_devnet() {
-					#[cfg(feature = "with-devnet-runtime")]
+				if chain_spec.is_mainnet() {
+					#[cfg(feature = "with-mainnet-runtime")]
 					{
-						Box::new(chain_spec::devnet::ChainSpec::from_json_file(path)?)
+						Box::new(chain_spec::mainnet::ChainSpec::from_json_file(path)?)
 					}
-					#[cfg(not(feature = "with-devnet-runtime"))]
-					return Err(service::DEVNET_RUNTIME_NOT_AVAILABLE.into());
+					#[cfg(not(feature = "with-mainnet-runtime"))]
+					return Err(service::MAINNET_RUNTIME_NOT_AVAILABLE.into());
 				} else {
 					#[cfg(feature = "with-devnet-runtime")]
 					{
@@ -62,11 +69,11 @@ impl SubstrateCli for Cli {
 	}
 
 	fn native_runtime_version(spec: &Box<dyn ChainSpec>) -> &'static RuntimeVersion {
-		if spec.is_devnet() {
-			#[cfg(feature = "with-devnet-runtime")]
-			return &service::devnet_runtime::VERSION;
-			#[cfg(not(feature = "with-devnet-runtime"))]
-			panic!("{}", service::DEVNET_RUNTIME_NOT_AVAILABLE);
+		if spec.is_mainnet() {
+			#[cfg(feature = "with-mainnet-runtime")]
+			return &service::mainnet_runtime::VERSION;
+			#[cfg(not(feature = "with-mainnet-runtime"))]
+			panic!("{}", service::MAINNET_RUNTIME_NOT_AVAILABLE);
 		} else {
 			#[cfg(feature = "with-devnet-runtime")]
 			return &service::devnet_runtime::VERSION;
@@ -86,17 +93,17 @@ pub fn run() -> sc_cli::Result<()> {
 			runner.run_node_until_exit(|config| async move {
 				let chain_spec = &config.chain_spec;
 
-				if chain_spec.is_devnet() {
-					#[cfg(feature = "with-devnet-runtime")]
+				if chain_spec.is_mainnet() {
+					#[cfg(feature = "with-mainnet-runtime")]
 					{
 						return service::new_full::<
-							service::devnet_runtime::RuntimeApi,
-							service::DevnetExecutor,
+							service::mainnet_runtime::RuntimeApi,
+							service::MainnetExecutor,
 						>(config)
 						.map_err(sc_cli::Error::Service);
 					}
-					#[cfg(not(feature = "with-devnet-runtime"))]
-					return Err(service::DEVNET_RUNTIME_NOT_AVAILABLE.into());
+					#[cfg(not(feature = "with-mainnet-runtime"))]
+					return Err(service::MAINNET_RUNTIME_NOT_AVAILABLE.into());
 				} else {
 					#[cfg(feature = "with-devnet-runtime")]
 					{
@@ -116,15 +123,15 @@ pub fn run() -> sc_cli::Result<()> {
 			runner.sync_run(|config| {
 				let chain_spec = &config.chain_spec;
 
-				if chain_spec.is_devnet() {
-					#[cfg(feature = "with-devnet-runtime")]
+				if chain_spec.is_mainnet() {
+					#[cfg(feature = "with-mainnet-runtime")]
 					{
-						return cmd.run::<service::devnet_runtime::Block, service::devnet_runtime::RuntimeApi, service::DevnetExecutor>(
+						return cmd.run::<service::mainnet_runtime::Block, service::mainnet_runtime::RuntimeApi, service::MainnetExecutor>(
 							config,
 						);
 					}
-					#[cfg(not(feature = "with-devnet-runtime"))]
-					return Err(service::DEVNET_RUNTIME_NOT_AVAILABLE.into());
+					#[cfg(not(feature = "with-mainnet-runtime"))]
+					return Err(service::MAINNET_RUNTIME_NOT_AVAILABLE.into());
 				}else {
 					#[cfg(feature = "with-devnet-runtime")]
 					{
@@ -144,16 +151,16 @@ pub fn run() -> sc_cli::Result<()> {
 				runner.sync_run(|config| {
 					let chain_spec = &config.chain_spec;
 
-					if chain_spec.is_devnet() {
-						#[cfg(feature = "with-devnet-runtime")]
+					if chain_spec.is_mainnet() {
+						#[cfg(feature = "with-mainnet-runtime")]
 						{
 							return cmd
-								.run::<service::devnet_runtime::Block, service::DevnetExecutor>(
+								.run::<service::mainnet_runtime::Block, service::MainnetExecutor>(
 									config,
 								);
 						}
-						#[cfg(not(feature = "with-devnet-runtime"))]
-						return Err(service::DEVNET_RUNTIME_NOT_AVAILABLE.into());
+						#[cfg(not(feature = "with-mainnet-runtime"))]
+						return Err(service::MAINNET_RUNTIME_NOT_AVAILABLE.into());
 					} else {
 						#[cfg(feature = "with-devnet-runtime")]
 						{
@@ -232,14 +239,14 @@ pub fn run() -> sc_cli::Result<()> {
 					sc_service::TaskManager::new(config.tokio_handle.clone(), registry)
 						.map_err(|e| sc_cli::Error::Service(sc_service::Error::Prometheus(e)))?;
 
-				if chain_spec.is_devnet() {
-					#[cfg(feature = "with-devnet-runtime")]
+				if chain_spec.is_mainnet() {
+					#[cfg(feature = "with-mainnet-runtime")]
 					return Ok((
-						cmd.run::<service::devnet_runtime::Block, service::DevnetExecutor>(config),
+						cmd.run::<service::mainnet_runtime::Block, service::MainnetExecutor>(config),
 						task_manager,
 					));
-					#[cfg(not(feature = "with-devnet-runtime"))]
-					return Err(service::DEVNET_RUNTIME_NOT_AVAILABLE.into());
+					#[cfg(not(feature = "with-mainnet-runtime"))]
+					return Err(service::MAINNET_RUNTIME_NOT_AVAILABLE.into());
 				} else {
 					#[cfg(feature = "with-devnet-runtime")]
 					return Ok((
