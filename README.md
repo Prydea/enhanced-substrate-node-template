@@ -4,6 +4,23 @@
 
 A fresh FRAME-based [Substrate](https://www.substrate.io/) node, ready for hacking :rocket:
 
+This node template is based on the original [Substrate Node Template](https://github.com/substrate-developer-hub/substrate-node-template) and modified to include some "good" practices inspired by production-ready chain, e.g [Moonbeam](https://github.com/PureStake/moonbeam), [Acala](https://github.com/AcalaNetwork/Acala),...
+
+## Features
+
+In Substrate-based chain, it usually contains two things:
+1. A client code (outer node).
+2. A runtime code (your state-transition logic).
+
+The main difference of this template versus the original substrate node template is that:
+
+`We modify the template so that multiple `**`Runtimes`**` could exist`
+
+In this template, we only support different runtimes with the same client logic because we assume the workflow is that you have different environments of the same chain instead of **completely seperated chains**.
+
+For example: 
+- You could have a devnet chain in your development environment, a testnet in your staging environment, and a mainnet in your production environment.
+- Although physically they are different chains, but conceptually, they're just the same chain with different configurations. Changes in devnet will be later deployed to testnet, and changes to testnet will eventually deployed to mainnet.
 ## Getting Started
 
 Follow the steps below to get started with the Node Template, or get it up and running right from
@@ -21,12 +38,23 @@ lorri `lorri shell`.
 
 First, complete the [basic Rust setup instructions](./docs/rust-setup.md).
 
+### Rust compilation feature for each runtime
+
+We support two runtimes `devnet`, `mainnet` by default, although you can add new runtimes later.
+
+There is rust compilation feature corresponding to each runtime. The feature idiom is `with-$chain-runtime`. For example: with `devnet`, the feature is `with-devnet-runtime`.
+
+### Chain Spec
+
+The chain spec's `id` must start with the name of the runtime for the node to launch the corresponding runtime. For example: with `devnet`, the chain spec's `id` could be `devnet-1`, `devnet-2`,...
+
 ### Run
 
-Use Rust's native `cargo` command to build and launch the template node:
+Use Rust's native `cargo` command to build and launch the template node
 
+Launch a devnet
 ```sh
-cargo run --release -- --dev
+cargo run --release --features with-devnet-runtime -- --chain=devnet-dev --alice
 ```
 
 ### Build
@@ -35,7 +63,7 @@ The `cargo run` command will perform an initial build. Use the following command
 without launching it:
 
 ```sh
-cargo build --release
+cargo build --release --features with-devnet-runtime
 ```
 
 ### Embedded Docs
@@ -58,19 +86,19 @@ node.
 This command will start the single-node development chain with non-persistent state:
 
 ```bash
-./target/release/node-template --dev
+./target/release/node-template --chain=devnet-dev --alice
 ```
 
 Purge the development chain's state:
 
 ```bash
-./target/release/node-template purge-chain --dev
+./target/release/node-template purge-chain --chain=devnet-dev
 ```
 
 Start the development chain with detailed logging:
 
 ```bash
-RUST_BACKTRACE=1 ./target/release/node-template -ldebug --dev
+RUST_BACKTRACE=1 ./target/release/node-template -ldebug --chain=devnet-dev
 ```
 
 > Development chain means that the state of our chain will be in a tmp folder while the nodes are
