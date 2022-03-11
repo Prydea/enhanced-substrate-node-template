@@ -1,6 +1,6 @@
 [package]
 name = "devnet-runtime"
-version = "0.0.1"
+version = "1.0.0"
 description = "A fresh FRAME-based Substrate runtime, ready for hacking."
 authors = ["Daniel Lam"]
 edition = "2021"
