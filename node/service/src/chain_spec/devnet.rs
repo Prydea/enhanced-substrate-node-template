@@ -1,9 +1,9 @@
 use crate::chain_spec::{authority_keys_from_seed, get_account_id_from_seed};
 use devnet_runtime::{
-	constants::currency::*, AccountId, AuraConfig, AuraId, AuthorityDiscoveryConfig,
-	AuthorityDiscoveryId, Balance, BalancesConfig, CouncilConfig, GenesisConfig, GrandpaConfig,
-	GrandpaId, ImOnlineConfig, ImOnlineId, IndicesConfig, MaxNominations, SessionConfig,
-	SessionKeys, StakerStatus, StakingConfig, SudoConfig, SystemConfig, WASM_BINARY,
+	AccountId, AuraConfig, AuraId, AuthorityDiscoveryConfig, AuthorityDiscoveryId, Balance,
+	BalancesConfig, CouncilConfig, GenesisConfig, GrandpaConfig, GrandpaId, ImOnlineConfig,
+	ImOnlineId, IndicesConfig, MaxNominations, SessionConfig, SessionKeys, StakerStatus,
+	StakingConfig, SudoConfig, SystemConfig, DOLLARS, TOKEN_DECIMALS, TOKEN_SYMBOL, WASM_BINARY,
 };
 use sc_service::{config::TelemetryEndpoints, ChainType, Properties};
 use sp_core::sr25519;
@@ -29,8 +29,8 @@ pub fn get_properties() -> Properties {
 	let mut properties = Properties::new();
 
 	properties.insert("ss58Format".into(), devnet_runtime::SS58Prefix::get().into());
-	properties.insert("tokenDecimals".into(), "DEV".into());
-	properties.insert("tokenSymbol".into(), 18.into());
+	properties.insert("tokenDecimals".into(), TOKEN_DECIMALS.into());
+	properties.insert("tokenSymbol".into(), TOKEN_SYMBOL.into());
 
 	properties
 }
@@ -221,8 +221,8 @@ fn testnet_genesis(
 			code: wasm_binary.to_vec(),
 		},
 		balances: BalancesConfig {
-			// Configure endowed accounts with initial balance of 1 << 60.
-			balances: endowed_accounts.iter().cloned().map(|k| (k, 1 << 60)).collect(),
+			// Configure endowed accounts with initial balance of ENDOWMENT.
+			balances: endowed_accounts.iter().cloned().map(|k| (k, ENDOWMENT)).collect(),
 		},
 		indices: IndicesConfig { indices: vec![] },
 		aura: AuraConfig { authorities: vec![] },

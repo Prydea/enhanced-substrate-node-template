@@ -8,11 +8,10 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 pub use common_primitives::*;
 
-pub use runtime_common::constants;
-use runtime_common::{
-	constants::{currency::*, time::*},
-	*,
-};
+use runtime_common::{constants::time::*, *};
+
+mod constants;
+pub use constants::currency::*;
 
 mod pallets;
 pub use pallets::*;
@@ -62,7 +61,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	//   `spec_version`, and `authoring_version` are the same between Wasm and native.
 	// This value is set to 100 to notify Polkadot-JS App (https://polkadot.js.org/apps) to use
 	//   the compatible custom types.
-	spec_version: 100,
+	spec_version: 1_000_000,
 	impl_version: 1,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
